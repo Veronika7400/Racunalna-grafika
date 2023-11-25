@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Vjetromjer</title>
+</head>
+<script src="MT3D.js"></script>
+<script src="Persp.js"></script>
+
+<body>
+    <h1>Vjetromjer</h1>
+    <canvas id="canvas1" width="700" height="700" style="border: 5px solid black">
+        Vaš preglednik ne podržava HTML5 canvas.
+    </canvas>
+
+    <script>
+        window.onload = function () {
+            var platno1 = document.getElementById("canvas1");
+            if (!platno1) alert("Greška - nema platna!");
+
+            var crtanje = new Perps(platno1, -7, 7, -7, 7, 7);
+
+            var a = 1;
+            var b = 7;
+
+            var mt3d = new MT3D();
+
+            function nacrtajMrezu() {
+                crtanje.koristiBoju("red");
+                for (var y = -b; y <= b; y += 0.5) {
+                    crtanje.postaviNa(-b, 0, y);
+                    crtanje.linijaDo(b, 0, y);
+                    crtanje.povuciLiniju();
+                }
+                for (var x = -b; x <= b; x += 0.5) {
+                    crtanje.postaviNa(x, 0, -b);
+                    crtanje.linijaDo(x, 0, b);
+                    crtanje.povuciLiniju();
+                }
+            }
+
+            function nacrtajStaticniDio(){ 
+                crtanje.koristiBoju('red');
+                nacrtajMrezu();
+                mt3d.rotirajX(-90);
+                crtanje.trans(mt3d);
+                crtanje.koristiBoju('black')
+                crtanje.nacrtajStozac(5, 13, 30);
+                mt3d.pomakni(0, 0, 11);
+                crtanje.trans(mt3d);
+            }
+
+            function nacrtajDioZaOkretanje() {
+                crtanje.nacrtajValjak(1, 2, 20);
+                mt3d.pomakni(0, 0, 0.7);
+                crtanje.trans(mt3d);
+
+                postaviPolukugle(3, 7);
+                mt3d.rotirajX(90);
+                crtanje.trans(mt3d);
+                postaviValjke(3, 0.5);
+
+            }
+
+            function postaviValjke(brojValjaka, radijus) {
+                var kut = 360 / brojValjaka;
+                mt3d.rotirajY(60);
+                crtanje.trans(mt3d);
+                for (let i = 0; i < brojValjaka; i++) {
+                    crtanje.nacrtajValjak(radijus,6.3 , 15);
+                    mt3d.rotirajY(kut);
+                    crtanje.trans(mt3d);
+                }
+            }
+
+            function postaviPolukugle(brojPolukugli, radijus) {
+                var kut = 0; 
+                for (let i = 0; i < brojPolukugli; i++) {
+                    kut+=240; 
+                    const phi = (2 * Math.PI * i) / brojPolukugli;
+                    const x = radijus * Math.sin(phi);
+                    const y = radijus * Math.cos(phi);
+ 
+                    mt3d.pomakni(x, y, 0);
+                    crtanje.trans(mt3d); 
+                    mt3d.rotirajZ(kut);
+                    crtanje.trans(mt3d);  
+                    crtanje.nacrtajLijevuPoluKuglu(1, 14, 18);
+                    mt3d.rotirajZ(-kut);
+                    crtanje.trans(mt3d); 
+                    mt3d.pomakni(-x, -y, 0);
+                    crtanje.trans(mt3d);
+                
+                }
+            }
+
+            var kut = 45;
+            var visinaKamere = 6;
+            idi_gore = true;
+
+
+            function postaviKameru() {
+                crtanje.g.clearRect(0, 0, platno1.width, platno1.height);
+
+                mt3d.identitet();
+                mt3d.postaviKameru(11, visinaKamere, 11, 0,2, 0, 1, -1, 1);
+                crtanje.trans(mt3d);
+                nacrtajStaticniDio(); 
+                mt3d.rotirajZ(kut);
+                crtanje.trans(mt3d);
+                nacrtajDioZaOkretanje();
+
+                promjeniKut();
+                promjeniVisinuKamere(); 
+                requestAnimationFrame(postaviKameru);
+            }
+           
+            postaviKameru();
+
+            function promjeniKut() {
+                if (kut < 360) {
+                    kut += 1;
+
+                }
+                else {
+                    kut = 0;
+                    
+                }
+            }
+
+            function promjeniVisinuKamere() {
+                if (idi_gore == true) {
+                    visinaKamere += 0.01;
+                    if (Math.round(visinaKamere) == 8.0) {
+                        idi_gore = false;
+                    }
+                }
+                else {
+                    visinaKamere -= 0.01;
+                    if (Math.round(visinaKamere) == 5) {
+                        idi_gore = true;
+                    }
+                }
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>

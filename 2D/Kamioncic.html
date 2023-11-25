@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- saved from url=(0092)https://elf.foi.hr/pluginfile.php/15204/mod_resource/content/11/v1/RG-primjer1-1-linije.html -->
+<html lang="hr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<title>Kamioncic </title>
+	</head>
+	<script src="GKS.js"></script>
+	<script src="MT2D.js"></script>
+	<body>
+		<h1>Kamioncic</h1>	
+		<canvas id="canvas1" width="500" height="500" style="border:5px solid black">
+			Vaš preglednik ne podržava HTML5 canvas.
+		</canvas>
+
+		<script>
+		    window.onload = function() {
+				var platno1 = document.getElementById("canvas1");
+				if(!platno1) alert("Greška - nema platna!");
+
+				Xmin = -10;
+				Xmax = 10;
+				Ymin= -10;
+				Ymax=10; 
+		
+				var gks = new GKS(platno1, Xmin, Xmax);
+				
+				//x-os
+				gks.koristiBoju ("black");
+				gks.postaviNa(Xmin,0);
+				gks.linijaDo(Xmax,0);
+				gks.povuciLiniju(); 
+
+				for (i = Xmin; i <= Xmax; i++) {
+					gks.postaviNa(i,0);
+					if (i !== 0) {
+					gks.g.fillText(i, gks.Sx * i + gks.Px-5, gks.Sy * 0 + gks.Py+15);
+					gks.g.moveTo(gks.Sx * i + gks.Px, gks.Sy * 0 + gks.Py-3);
+					gks.g.lineTo(gks.Sx * i + gks.Px, gks.Sy * 0 + gks.Py+3);
+					gks.povuciLiniju(); 
+					}
+				}
+			
+				//y-os
+				gks.postaviNa(0,Xmin);
+				gks.linijaDo(0,Xmax);
+				gks.povuciLiniju(); 
+
+				for (i = Ymin; i <=Ymax; i++) {
+					gks.postaviNa(0,i);
+					if (i !== 0) {
+					gks.g.fillText(i, gks.Sx * 0 + gks.Px+5, gks.Sy * i + gks.Py+4);
+					gks.g.moveTo(gks.Sx * 0 + gks.Px - 3, gks.Sy * i + gks.Py);
+					gks.g.lineTo(gks.Sx * 0 + gks.Px + 3, gks.Sy * i + gks.Py);
+					gks.povuciLiniju(); 
+					}
+				}
+				var pravokutnik1 = [
+					[1, 2],
+					[5, 2],
+					[5, 4],
+					[1, 4],
+				];
+				var pravokutnik2 = [
+					[5, 2],
+					[7, 2],
+					[7, 5],
+					[5, 5],
+				];
+				var pravokutnik3 = [
+					[5.3, 4],
+					[6.7, 4],
+					[6.7, 4.7],
+					[5.3, 4.7],
+				];
+				//[r,x,y]
+				var kruznica1 = [0.5,2,2]
+				var kruznica2 = [0.5,6,2]
+
+				nacrtajPravokutnik(pravokutnik1); 
+				nacrtajPravokutnik(pravokutnik2); 
+				nacrtajPravokutnik(pravokutnik3); 
+				nacrtajKriznicu(kruznica1); 
+				nacrtajKriznicu(kruznica2); 
+
+				function nacrtajPravokutnik(pravokutnik){
+					gks.postaviNa(pravokutnik[0][0], pravokutnik[0][1]);
+					gks.linijaDo(pravokutnik[1][0], pravokutnik[1][1]);
+					gks.linijaDo(pravokutnik[2][0], pravokutnik[2][1]);
+					gks.linijaDo(pravokutnik[3][0], pravokutnik[3][1]);
+					gks.linijaDo(pravokutnik[0][0], pravokutnik[0][1]);
+					gks.povuciLiniju();
+				}
+
+				function nacrtajKriznicu(kruznica){
+					const br = 80;
+       			    const k = (2*Math.PI)/br;
+        			gks.postaviNa(kruznica[0]+kruznica[1],kruznica[2]);
+					for (let i = 0; i < br; i++) {
+					const kut = i * k;
+					const x = kruznica[1] + kruznica[0] * Math.cos(kut);
+					const y = kruznica[2] + kruznica[0] * Math.sin(kut);
+					gks.linijaDo(x,y);
+					}
+					gks.linijaDo(kruznica[0]+kruznica[1],kruznica[2]);
+					gks.povuciLiniju();
+				}
+
+				//pravac y=3x+6 (y=kx+l)														
+				var gks = new GKS(platno1, Xmin, Xmax);
+				gks.koristiBoju("red");
+				k=3;
+				l=6; 
+
+				for(var x=-platno1.width; x<=platno1.width; x+=0.5){
+					var x1 = x;
+					var y1 = k * x1 + l;
+					var x2 = x + 0.8;
+					var y2 = k * x2 + l;
+					gks.postaviNa(x1,y1);
+					gks.linijaDo(x2,y2);
+					gks.povuciLiniju(); 
+				}
+
+				//zrcalna slika 
+				gks.koristiBoju("blue");
+				alfa =Math.atan(k); 
+				//T 
+				T = new MT2D();
+				T.pomakni(0, l);
+				//R
+				R = new MT2D();
+				R.rotiraj(alfa*(180/Math.PI));
+				// R2
+				R2 = new MT2D();
+				R2.rotiraj(-alfa*(180/Math.PI));
+				//T2
+				T2 = new MT2D();
+				T2.pomakni(0,-l);		
+				// Zx
+				Zx = new MT2D();
+				Zx.zrcaliNaX();	
+				//Zp= T(0, l) R(alfa) Zx R(-alfa) T(0,-l)
+				T.mult(R.getMatrica()); 
+				T.mult(Zx.getMatrica()); 
+				T.mult(R2.getMatrica()); 
+				T.mult(T2.getMatrica()); 
+				gks.trans(T); 
+
+				nacrtajPravokutnik(pravokutnik1); 
+				nacrtajPravokutnik(pravokutnik2); 
+				nacrtajPravokutnik(pravokutnik3); 
+				nacrtajKriznicu(kruznica1); 
+				nacrtajKriznicu(kruznica2); 
+
+				
+		}
+		</script>
+	
+</body></html>
